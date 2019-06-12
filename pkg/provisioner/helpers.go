@@ -67,6 +67,8 @@ func claimForKey(key string, c versioned.Interface) (obc *v1alpha1.ObjectBucketC
 	}
 
 	obc, err = c.ObjectbucketV1alpha1().ObjectBucketClaims(ns).Get(name, metav1.GetOptions{})
+logD.Info("DEBUG ***** claimForKey AFTER Get():", "err", err, "obc", obc, "obc Kind", obc.Kind, "obc version", obc.APIVersion)
+
 	if err != nil {
 		if errors.IsNotFound(err) {
 			return nil, err
