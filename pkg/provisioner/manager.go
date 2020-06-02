@@ -19,6 +19,7 @@ package provisioner
 import (
 	"flag"
 	"time"
+
 	"k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -113,14 +114,14 @@ func (p *Provisioner) SetLabels(labels map[string]string) []string {
 }
 
 // Run starts the claim and bucket controllers.
-func (p *Provisioner) Run(stopCh <-chan struct{}) (err error) {
+func (p *Provisioner) Run(threadiness int, stopCh <-chan struct{}) (err error) {
 	defer klog.Flush()
 	log.Info("starting provisioner", "name", p.Name)
 
 	p.informerFactory.Start(stopCh)
 
 	go func() {
-		err = p.claimController.Start(stopCh)
+		err = p.claimController.Start(threadiness, stopCh)
 	}()
 	<-stopCh
 	return

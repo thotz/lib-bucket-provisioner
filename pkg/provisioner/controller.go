@@ -39,7 +39,7 @@ import (
 )
 
 type controller interface {
-	Start(<-chan struct{}) error
+	Start(int, <-chan struct{}) error
 	SetLabels(map[string]string)
 }
 
@@ -108,15 +108,16 @@ func NewController(provisionerName string, provisioner api.Provisioner, clientse
 	return ctrl
 }
 
-func (c *obcController) Start(stopCh <-chan struct{}) error {
+func (c *obcController) Start(threadiness int, stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
 	defer c.queue.ShutDown()
 
 	if !cache.WaitForCacheSync(stopCh, c.obcHasSynced, c.obHasSynced) {
 		return fmt.Errorf("failed to waith for caches to sync ")
 	}
-	go wait.Until(c.runWorker, time.Second, stopCh)
-
+	for i := 0; i < threadiness; i++ {
+		go wait.Until(c.runWorker, time.Second, stopCh)
+	}
 	<-stopCh
 	return nil
 }

@@ -127,7 +127,7 @@ const (
 
 // ObjectBucketStatus defines the observed state of ObjectBucket
 type ObjectBucketStatus struct {
-	Phase      ObjectBucketStatusPhase `json:"phase"`
+	Phase ObjectBucketStatusPhase `json:"phase"`
 }
 
 // +genclient
